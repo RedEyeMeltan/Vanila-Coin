@@ -8,7 +8,7 @@ HEADER = 64
 PORT = 5050
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
-SERVER = "172.24.96.1"
+SERVER = "172.21.160.1"
 ADDR = (SERVER, PORT)
 
 #  THE HASH IS TESTED WITH "test"
@@ -19,11 +19,11 @@ triple_test = "5b24f7aa99f1e1da5698a4f91ae0f4b45651a1b625c61ed669dd25ff5b937972"
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#client.connect(ADDR)
+client.connect(ADDR)
 
 def singleHash(content):
     global single_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
+    hash_object = hashlib.sha256(content.hexdigest().encode(FORMAT))
     single_hex_dig = hash_object.hexdigest()
     
 
@@ -62,6 +62,7 @@ def verifyHash():
     except:
         print("{ERROR!!!} TRIPLE HASH TEST FAILED.\n")
 
+
 def send(msg):
     message = msg.encode(FORMAT)
     msg_length = len(message)
@@ -73,5 +74,5 @@ def send(msg):
 
 
 
-#send("hi")
-#send(DISCONNECT_MESSAGE)
+send("hi")
+send(DISCONNECT_MESSAGE)
