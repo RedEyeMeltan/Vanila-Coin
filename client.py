@@ -23,7 +23,7 @@ client.connect(ADDR)
 
 def singleHash(content):
     global single_hex_dig
-    hash_object = hashlib.sha256(content.hexdigest().encode(FORMAT))
+    hash_object = hashlib.sha256(content.encode(FORMAT))
     single_hex_dig = hash_object.hexdigest()
     
 
