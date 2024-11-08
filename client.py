@@ -12,18 +12,19 @@ SERVER = "172.24.96.1"
 ADDR = (SERVER, PORT)
 
 #  THE HASH IS TESTED WITH "test"
+verifyhash = 'test'
 single_test = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
 double_test = "7b3d979ca8330a94fa7e9e1b466d8b99e0bcdea1ec90596c0dcc8d7ef6b4300c"
 triple_test = "5b24f7aa99f1e1da5698a4f91ae0f4b45651a1b625c61ed669dd25ff5b937972"
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+#client.connect(ADDR)
 
-def hash(content):
-    global hex_dig
+def singleHash(content):
+    global single_hex_dig
     hash_object = hashlib.sha256(content.encode(FORMAT))
-    hex_dig = hash_object.hexdigest()
+    single_hex_dig = hash_object.hexdigest()
     
 
 def doubleHash(content):
@@ -39,6 +40,28 @@ def tripleHash(content):
     triple_hash_object = hashlib.sha256(double_hash_object.hexdigest().encode(FORMAT))
     triple_hex_dig = triple_hash_object.hexdigest()
 
+def verifyHash():
+    singleHash(verifyHash)
+    doubleHash(verifyHash)
+    tripleHash(verifyHash)
+    try: # Single
+        if single_hex_dig == single_test:
+            print("{HASH TEST} Single hash working.\n")
+    except:
+        print("{ERROR!!!} SINGLE HASH TEST FAILED.\n")
+
+    try: # Double
+        if double_hex_dig == double_test:
+            print("{HASH TEST} Double hash working.\n")
+    except:
+        print("{ERROR!!!} DOUBLE HASH TEST FAILED.\n")
+
+    try: # Triple
+        if triple_hex_dig == triple_test:
+            print("{HASH TEST} Triple hash working.\n")
+    except:
+        print("{ERROR!!!} TRIPLE HASH TEST FAILED.\n")
+
 def send(msg):
     message = msg.encode(FORMAT)
     msg_length = len(message)
@@ -48,5 +71,7 @@ def send(msg):
     client.send(message)
     print(client.recv(2048))
 
-send("hi")
-send(DISCONNECT_MESSAGE)
+
+
+#send("hi")
+#send(DISCONNECT_MESSAGE)
