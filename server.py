@@ -75,12 +75,19 @@ def handle_client(conn, addr):
             conn.send(f"MSG received. MSG: {msg}".encode(FORMAT))
 
             if msg.startswith("CPU ID") or msg.startswith("Motherboard Serial Number") or msg.startswith("Disk Serial Number"):
+                
                 if msg.startswith("CPU ID"):
-                    break
+                    print(f"[{addr}] CPU ID RECEIVED")
+                    conn.send(f"CPU INFO RECEIVED".encode(FORMAT))
+                    
                 if msg.startswith("Motherboard Serial Number"):
-                    break
+                    print(f"[{addr}] MOTHERBOARD SERIAL NUMBER RECEIVED")
+                    conn.send(f"MOTHERBOARD INFO RECEIVED".encode(FORMAT))
+                    
                 if msg.startswith("Disk Serial Number"):
-                    break
+                    print(f"[{addr}] DISK SERIAL NUMBER RECEIVED")
+                    conn.send(f"DISK INFO RECEIVED".encode(FORMAT))
+                    
                 else:
                     print(f"[{addr}] {msg}")
                     conn.send(f"MSG received. MSG: {msg}".encode(FORMAT)) 
