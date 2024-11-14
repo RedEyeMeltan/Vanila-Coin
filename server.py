@@ -8,6 +8,8 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
+ENCODE_KEY = '@XM[2ui(#Y!ND1z[xq'
+DECODE_KEY = '{+E%%)]XKSZ-w$SMS-'
 
 # Hash test constants
 verifyhash = 'test'
