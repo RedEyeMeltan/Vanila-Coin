@@ -1,6 +1,8 @@
+from datetime import datetime
 import socket
 import threading
 import hashlib
+import pytz
 
 HEADER = 64
 PORT = 5050
@@ -8,8 +10,10 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
+SHUTDOWN_MESSAGE = "quit"
 ENCODE_KEY = '@XM[2ui(#Y!ND1z[xq'
 DECODE_KEY = '{+E%%)]XKSZ-w$SMS-'
+ID_CODE = ":$z35$7LW$"
 
 # Hash test constants
 verifyhash = 'test'
@@ -59,6 +63,26 @@ def verifyHash():
     else:
         print("{ERROR!!!} TRIPLE HASH TEST FAILED.\n")
 
+def getTime():
+    # Define the timezone for PST
+    pst_timezone = pytz.timezone("America/Los_Angeles")
+
+    # Get the current time in PST
+    current_pst_time = datetime.now(pst_timezone)
+
+    # Display the result
+    return current_pst_time.strftime("%Y-%m-%d %H:%M:%S")
+
+def shutdown_server():
+    global server_running
+    while True:
+        command = input()
+        if command == SHUTDOWN_MESSAGE:
+            server_running = False
+            server.close()
+            print("[SHUTDOWN] Server is shutting down...")
+            break
+
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     connected = True
@@ -76,27 +100,28 @@ def handle_client(conn, addr):
             print(f"[{addr}] {msg}")
             conn.send(f"MSG received. MSG: {msg}".encode(FORMAT))
 
-            if msg.startswith("CPU ID") or msg.startswith("Motherboard Serial Number") or msg.startswith("Disk Serial Number"):
+
+            if f"{ID_CODE}CPU ID:" in msg:
+                print(f"[{addr}] CPU ID RECEIVED: {msg.split('CPU ID: ')[1]}")
+                conn.send("CPU INFO RECEIVED".encode(FORMAT))
+
+            elif f"{ID_CODE}Disk Serial Number:" in msg:
+                print(f"[{addr}] DISK SERIAL NUMBER RECEIVED: {msg.split('Disk Serial Number: ')[1]}")
+                conn.send("DISK INFO RECEIVED".encode(FORMAT))
+
+            elif f"{ID_CODE}RAM ID:" in msg:
+                print(f"[{addr}] RAM ID RECEIVED: {msg.split('RAM ID: ')[1]}")
+                conn.send("RAM INFO RECEIVED".encode(FORMAT))
                 
-                if msg.startswith("CPU ID"):
-                    print(f"[{addr}] CPU ID RECEIVED")
-                    conn.send(f"CPU INFO RECEIVED".encode(FORMAT))
-                    
-                if msg.startswith("Motherboard Serial Number"):
-                    print(f"[{addr}] MOTHERBOARD SERIAL NUMBER RECEIVED")
-                    conn.send(f"MOTHERBOARD INFO RECEIVED".encode(FORMAT))
-                    
-                if msg.startswith("Disk Serial Number"):
-                    print(f"[{addr}] DISK SERIAL NUMBER RECEIVED")
-                    conn.send(f"DISK INFO RECEIVED".encode(FORMAT))
-                    
-                else:
-                    print(f"[{addr}] {msg}")
-                    conn.send(f"MSG received. MSG: {msg}".encode(FORMAT)) 
+            else:
+                print(f"[{addr}] {msg}")
+                conn.send(f"MSG received. MSG: {msg}".encode(FORMAT))
+
 
     conn.close()
 
 def start():
+    print("[STARTING] server is starting...")
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:
@@ -105,6 +130,7 @@ def start():
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
-print("[STARTING] server is starting...")
+
 verifyHash()
-start()
+threading.Thread(target=start).start()
+threading.Thread(target=shutdown_server).start()
