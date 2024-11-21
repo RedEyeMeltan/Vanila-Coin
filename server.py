@@ -3,6 +3,7 @@ import socket
 import threading
 import hashlib
 import pytz
+import json
 
 HEADER = 64
 PORT = 5050
@@ -73,6 +74,36 @@ def getTime():
     # Display the result
     return current_pst_time.strftime("%Y-%m-%d %H:%M:%S")
 
+def add_user(user_name, password, cpu_info, disk_info, ram_info):
+    try:
+        with open('info.json', 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        data = {}
+
+    user_data = {
+        "user_name": user_name,
+        "password": password,
+        "cpu_info": cpu_info,
+        "disk_info": disk_info
+        "ram_info": ram_info
+    }
+
+    data[user_name] = user_data
+
+    with open('info.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
+    print(f"Data added for {user_name}\n")
+
+def view_user_data():
+    try:
+        with open('info.json', 'r'):
+            data = json.load(file)
+    except FileNotFoundError:
+        data = {}
+
+    
 def shutdown_server():
     global server_running
     while True:
