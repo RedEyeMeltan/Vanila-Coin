@@ -96,13 +96,38 @@ def add_user(user_name, password, cpu_info, disk_info, ram_info):
 
     print(f"Data added for {user_name}\n")
 
-def view_user_data():
+def view_all_user_data():
     try:
         with open('info.json', 'r'):
             data = json.load(file)
     except FileNotFoundError:
         data = {}
 
+    if not data:
+        print("{ERROR} NO USER DATA FOUND")
+        return
+
+    for user, details in data.items():
+        print(f"User: {user}")
+        for key, value in details.items():
+            print(f"    {key}: {value}")
+        print() # Newline for readability
+
+def delete_user(user_name):
+    try:
+        with open('info.json', 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print("No User Data Found")
+        return
+
+    if user_name in data:
+        del data[user_name]
+        with open('info.json', 'w') as file:
+            json.dump(data, file, indent=4)
+        print(f"Deleted User_Data for: {user_name}")
+    else:
+        print(f"No Info Found For {user_name}")
     
 def shutdown_server():
     global server_running
