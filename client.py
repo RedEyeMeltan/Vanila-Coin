@@ -1,6 +1,7 @@
 import socket
 import wmi
 import hashlib
+import blake3
 
 w = wmi.WMI() # Initialize WMI object
 
