@@ -11,7 +11,7 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = "192.168.56.1"
 ADDR = (SERVER, PORT)
-ID_CODE = ":$z35$7LW$"
+ID_CODE = "8e9acf8a6dd4ad6a5eed38bdd217a6e93d6b273ce74e886972c12dc58ceaea00"
 
 #  THE HASH IS TESTED WITH "test"
 verifyhash = 'test'
