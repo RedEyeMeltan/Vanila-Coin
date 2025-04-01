@@ -4,6 +4,9 @@ import threading
 import hashlib
 import pytz
 import json
+import mysql.connector
+from mysql.connector import Error
+import pandas as pd
 from functions import *
 
 HEADER = 64
@@ -15,7 +18,7 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 SHUTDOWN_MESSAGE = "quit"
 ENCODE_KEY = '@XM[2ui(#Y!ND1z[xq'
 DECODE_KEY = '{+E%%)]XKSZ-w$SMS-'
-ID_CODE = ":$z35$7LW$"
+ID_CODE = "8e9acf8a6dd4ad6a5eed38bdd217a6e93d6b273ce74e886972c12dc58ceaea00"
 
 # Hash test constants
 verifyhash = 'test'
@@ -186,6 +189,16 @@ def start():
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="yourusername",
+  password="yourpassword"
+)
+mycursor = mydb.cursor()
+mycursor.execute("CREATE DATABASE mydatabase")
+
 
 
 # Actually run all the code here
