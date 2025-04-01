@@ -15,9 +15,9 @@ ID_CODE = ":$z35$7LW$"
 
 #  THE HASH IS TESTED WITH "test"
 verifyhash = 'test'
-single_test = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-double_test = "7b3d979ca8330a94fa7e9e1b466d8b99e0bcdea1ec90596c0dcc8d7ef6b4300c"
-triple_test = "5b24f7aa99f1e1da5698a4f91ae0f4b45651a1b625c61ed669dd25ff5b937972"
+single_test = "4878ca0425c739fa427f7eda20fe845f6b2e46ba5fe2a14df5b1e32f50603215"
+double_test = "55beb65d3293549b07cf215978375cf674d82de8657775da6c0f697b4e6b5e0b"
+triple_test = "1af8e96926a936cce32a1e304a068a3379968fd28c0843dcb08186adfaba1441"
 
 cpu_id = w.Win32_Processor()[0].ProcessorId
 disk_serial = w.Win32_DiskDrive()[0].SerialNumber
@@ -36,42 +36,36 @@ def hwidSend():
 
 
 def singleHash(content):
-    global single_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
-    single_hex_dig = hash_object.hexdigest()
+    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    return singleHash
     
 
 def doubleHash(content):
-    global double_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
-    double_hash_object = hashlib.sha256(hash_object.hexdigest().encode(FORMAT))
-    double_hex_dig = double_hash_object.hexdigest()
+    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    doubleHash = blake3(f"{singleHash}".encode('utf-8')).hexdigest()
+    return doubleHash
 
 def tripleHash(content):
-    global triple_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
-    double_hash_object = hashlib.sha256(hash_object.hexdigest().encode(FORMAT))
-    triple_hash_object = hashlib.sha256(double_hash_object.hexdigest().encode(FORMAT))
-    triple_hex_dig = triple_hash_object.hexdigest()
+    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    doubleHash = blake3(f"{singleHash}".encode('utf-8')).hexdigest()
+    tripleHash = blake3(f"{doubleHash}".encode('utf-8')).hexdigest()
+    return tripleHash
 
 def verifyHash():
-    singleHash(verifyHash)
-    doubleHash(verifyHash)
-    tripleHash(verifyHash)
     try: # Single
-        if single_hex_dig == single_test:
+        if singleHash(verifyHash) == single_test:
             print("{HASH TEST} Single hash working.\n")
     except:
         print("{ERROR!!!} SINGLE HASH TEST FAILED.\n")
 
     try: # Double
-        if double_hex_dig == double_test:
+        if doubleHash(verifyHash) == double_test:
             print("{HASH TEST} Double hash working.\n")
     except:
         print("{ERROR!!!} DOUBLE HASH TEST FAILED.\n")
 
     try: # Triple
-        if triple_hex_dig == triple_test:
+        if tripleHash(verifyHash) == triple_test:
             print("{HASH TEST} Triple hash working.\n")
     except:
         print("{ERROR!!!} TRIPLE HASH TEST FAILED.\n")
