@@ -5,6 +5,7 @@ import hashlib
 import pytz
 import json
 import mysql.connector
+import blake3
 from mysql.connector import Error
 import pandas as pd
 from functions import *
@@ -22,31 +23,28 @@ ID_CODE = "8e9acf8a6dd4ad6a5eed38bdd217a6e93d6b273ce74e886972c12dc58ceaea00"
 
 # Hash test constants
 verifyhash = 'test'
-single_test = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-double_test = "7b3d979ca8330a94fa7e9e1b466d8b99e0bcdea1ec90596c0dcc8d7ef6b4300c"
-triple_test = "5b24f7aa99f1e1da5698a4f91ae0f4b45651a1b625c61ed669dd25ff5b937972"
+single_test = "4878ca0425c739fa427f7eda20fe845f6b2e46ba5fe2a14df5b1e32f50603215"
+double_test = "55beb65d3293549b07cf215978375cf674d82de8657775da6c0f697b4e6b5e0b"
+triple_test = "1af8e96926a936cce32a1e304a068a3379968fd28c0843dcb08186adfaba1441"
 
 # Server setup
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 def singleHash(content):
-    global single_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
-    single_hex_dig = hash_object.hexdigest()
+    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    return singleHash
     
 def doubleHash(content):
-    global double_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
-    double_hash_object = hashlib.sha256(hash_object.hexdigest().encode(FORMAT))
-    double_hex_dig = double_hash_object.hexdigest()
+    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    doubleHash = blake3(f"{singleHash}".encode('utf-8')).hexdigest()
+    return doubleHash
 
 def tripleHash(content):
-    global triple_hex_dig
-    hash_object = hashlib.sha256(content.encode(FORMAT))
-    double_hash_object = hashlib.sha256(hash_object.hexdigest().encode(FORMAT))
-    triple_hash_object = hashlib.sha256(double_hash_object.hexdigest().encode(FORMAT))
-    triple_hex_dig = triple_hash_object.hexdigest()
+    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    doubleHash = blake3(f"{singleHash}".encode('utf-8')).hexdigest()
+    tripleHash = blake3(f"{doubleHash}".encode('utf-8')).hexdigest()
+    return tripleHash
 
 def verifyHash():
     singleHash(verifyhash)
@@ -211,10 +209,18 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 # Create table
-mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created datetime2)")
+mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256))")
 
 # Template for adding info to table
 customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created) VALUES (%s, %s, %s, %s, %s, %s)"
+
+# Function for adding customer info to database
+def AddCustomerInfo(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
+    val = (f"{singleHash(username)}", f"{singleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}")
+    mycursor.execute(sql, val)
+
+    # Won't excute without "mydb.commit()"
+    mydb.commit()
 
 # Actually run all the code here
 verifyHash()
