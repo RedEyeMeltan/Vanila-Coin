@@ -190,16 +190,31 @@ def start():
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
-
+# Connect to database
 mydb = mysql.connector.connect(
   host="localhost",
   user="yourusername",
   password="yourpassword"
 )
 mycursor = mydb.cursor()
+
+# Create datebase
 mycursor.execute("CREATE DATABASE mydatabase")
 
+# Connect to database again
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="yourusername",
+  password="yourpassword"
+  database-"mydatabase"
+)
+mycursor = mydb.cursor()
 
+# Create table
+mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created datetime2)")
+
+# Template for adding info to table
+customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created) VALUES (%s, %s, %s, %s, %s, %s)"
 
 # Actually run all the code here
 verifyHash()
