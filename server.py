@@ -221,6 +221,7 @@ def AddCustomerInfo(username, password, cpu_id, ram_id, motherboard_id, time_aco
 
     # Won't excute without "mydb.commit()"
     mydb.commit()
+    print("Added user to database")
 
 # Actually run all the code here
 verifyHash()
