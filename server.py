@@ -227,7 +227,7 @@ def AddCustomerInfo(username, password, cpu_id, ram_id, motherboard_id, time_aco
     print(f"Added user: {username} to database. ID: ")
 
 # Checks if a list contains any duplicate elements.
-def has_duplicates(arr):
+def hasDuplicates(arr):
     return len(arr) != len(set(arr))
 
 # Generates 25 random words for added login security. NOTE: this function should be excuted before using "AddCustomerInfo" func because wordlist should be in DB
@@ -239,7 +239,7 @@ def wordSecurity():
         testWord = r.get_random_word()
         if len(testWord) <= 6:
           testWordList.append(testWord)
-          if not has_duplicates(testWordList):
+          if not hasDuplicates(testWordList):
               currentWord = testWord
               wordSecurityList.append(currentWord)
               wordListCount += 1
@@ -250,6 +250,9 @@ def wordSecurity():
               currentWord = testWord
               wordSecurityList.append(currentWord)
               wordListCount += 1
+
+def hashWordSecurity():
+    
 
 
     return wordSecurityList
