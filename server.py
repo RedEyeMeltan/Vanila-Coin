@@ -1,4 +1,3 @@
-from datetime import datetime
 import socket
 import threading
 import hashlib
@@ -6,9 +5,11 @@ import pytz
 import json
 import mysql.connector
 import blake3
-from mysql.connector import Error
 import pandas as pd
+from mysql.connector import Error
+from datetime import datetime
 from functions import *
+from random_word import RandomWords
 
 HEADER = 64
 PORT = 5050
@@ -31,6 +32,9 @@ triple_test = "1af8e96926a936cce32a1e304a068a3379968fd28c0843dcb08186adfaba1441"
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
+# Word list setup
+r = RandomWords()
+
 def singleHash(content):
     singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
     return singleHash
@@ -46,6 +50,7 @@ def tripleHash(content):
     tripleHash = blake3(f"{doubleHash}".encode('utf-8')).hexdigest()
     return tripleHash
 
+# Verifys hash using: "single_hash", "double_hash", "triple_hash"
 def verifyHash():
     singleHash(verifyhash)
     doubleHash(verifyhash)
@@ -174,8 +179,6 @@ def handle_client(conn, addr):
             else:
                 print(f"[{addr}] {msg}")
                 conn.send(f"MSG received. MSG: {msg}".encode(FORMAT))
-
-
     conn.close()
 
 def start():
@@ -214,15 +217,43 @@ mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY,
 # Template for adding info to table
 customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created) VALUES (%s, %s, %s, %s, %s, %s)"
 
-# Function for adding customer info to database
+# Function for adding customer info to database. NOTES: in DB username is not hashed and password is double hashed
 def AddCustomerInfo(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
-    val = (f"{singleHash(username)}", f"{singleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}")
-    mycursor.execute(sql, val)
+    val = (f"{username}", f"{doubleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}")
+    mycursor.execute(customerInfoAdd, val)
 
     # Won't excute without "mydb.commit()"
     mydb.commit()
-    print("Added user to database")
+    print(f"Added user: {username} to database. ID: ")
 
+# Checks if a list contains any duplicate elements.
+def has_duplicates(arr):
+    return len(arr) != len(set(arr))
+
+# Generates 25 random words for added login security. NOTE: this function should be excuted before using "AddCustomerInfo" func because wordlist should be in DB
+def wordSecurity():
+    wordSecurityList = []
+    testWordList = []
+    wordListCount = 0
+    while wordListCount <= 20:
+        testWord = r.get_random_word()
+        if len(testWord) <= 6:
+          testWordList.append(testWord)
+          if not has_duplicates(testWordList):
+              currentWord = testWord
+              wordSecurityList.append(currentWord)
+              wordListCount += 1
+          else:
+              testWordList = testWordList[:-1]
+              testWord = r.get_random_word()
+              testWordList.append(testWord)
+              currentWord = testWord
+              wordSecurityList.append(currentWord)
+              wordListCount += 1
+
+
+    return wordSecurityList
+                
 # Actually run all the code here
 verifyHash()
 threading.Thread(target=start).start()
