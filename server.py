@@ -36,18 +36,18 @@ server.bind(ADDR)
 r = RandomWords()
 
 def singleHash(content):
-    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
+    singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
     return singleHash
     
 def doubleHash(content):
-    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
-    doubleHash = blake3(f"{singleHash}".encode('utf-8')).hexdigest()
+    singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
+    doubleHash = blake3.blake3(f"{singleHash}".encode('utf-8')).hexdigest()
     return doubleHash
 
 def tripleHash(content):
-    singleHash = blake3(f"{content}".encode('utf-8')).hexdigest()
-    doubleHash = blake3(f"{singleHash}".encode('utf-8')).hexdigest()
-    tripleHash = blake3(f"{doubleHash}".encode('utf-8')).hexdigest()
+    singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
+    doubleHash = blake3.blake3(f"{singleHash}".encode('utf-8')).hexdigest()
+    tripleHash = blake3.blake3(f"{doubleHash}".encode('utf-8')).hexdigest()
     return tripleHash
 
 # Verifys hash using: "single_hash", "double_hash", "triple_hash"
@@ -212,7 +212,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 # Create table
-mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256))")
+mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256), word_list VARCHAR(2512))")
 
 # Template for adding info to table
 customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -251,11 +251,12 @@ def wordSecurity():
               wordSecurityList.append(currentWord)
               wordListCount += 1
 
-def hashWordSecurity():
-    
+# Uses "singleHash" func to hash a wordlist in the form of a array
+def hashWordSecurity(arr):
+  for i in range(len(arr)):
+    arr[i] = singleHash(arr[i])
+  return arr
 
-
-    return wordSecurityList
                 
 # Actually run all the code here
 verifyHash()
