@@ -215,7 +215,7 @@ mycursor = mydb.cursor()
 mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256), word_list VARCHAR(2512))")
 
 # Template for adding info to table
-customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created) VALUES (%s, %s, %s, %s, %s, %s)"
+customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created, word_list) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
 # Function for adding customer info to database. NOTES: in DB username is not hashed and password is double hashed
 def AddCustomerInfo(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
