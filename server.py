@@ -35,6 +35,9 @@ server.bind(ADDR)
 # Word list setup
 r = RandomWords()
 
+# SQL setup
+mycursor = mydb.cursor()
+
 def singleHash(content):
     singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
     return singleHash
@@ -81,28 +84,6 @@ def getTime():
     # Display the result
     return current_pst_time.strftime("%Y-%m-%d %H:%M:%S")
 
-def add_user(user_name, password, cpu_info, disk_info, ram_info):
-    try:
-        with open('info.json', 'r') as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        data = {}
-
-    user_data = {
-        "user_name": user_name,
-        "password": password,
-        "cpu_info": cpu_info,
-        "disk_info": disk_info
-        "ram_info": ram_info
-    }
-
-    data[user_name] = user_data
-
-    with open('info.json', 'w') as file:
-        json.dump(data, file, indent=4)
-
-    print(f"Data added for {user_name}\n")
-
 def view_all_user_data():
     try:
         with open('info.json', 'r'):
@@ -120,21 +101,20 @@ def view_all_user_data():
             print(f"    {key}: {value}")
         print() # Newline for readability
 
-def delete_user(user_name):
-    try:
-        with open('info.json', 'r') as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        print("No User Data Found")
-        return
+def delete_user(user_name, password):
+    global 
+    
+    sqlWhereUserName = f"SELECT * FROM customers WHERE user_name ='{user_name}'"
+    sqlWherePassword = f"SELECT * FROM customers WHERE password ='{doubleHash(password)}'"
 
-    if user_name in data:
-        del data[user_name]
-        with open('info.json', 'w') as file:
-            json.dump(data, file, indent=4)
-        print(f"Deleted User_Data for: {user_name}")
-    else:
-        print(f"No Info Found For {user_name}")
+    mycursor.execute(sqlWhereUserName)
+    UserNameResult = mycursor.fetchall() 
+
+    mycursor.excute(sqlWherePassword)
+    UserWherePassword = mycursor.fetchall()
+    
+    
+    
     
 def shutdown_server():
     global server_running
@@ -209,7 +189,6 @@ mydb = mysql.connector.connect(
   password="yourpassword"
   database-"mydatabase"
 )
-mycursor = mydb.cursor()
 
 # Create table
 mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256), word_list VARCHAR(2512))")
@@ -218,7 +197,7 @@ mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY,
 customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created, word_list) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
 # Function for adding customer info to database. NOTES: in DB username is not hashed and password is double hashed
-def AddCustomerInfo(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
+def Add_User(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
     val = (f"{username}", f"{doubleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}")
     mycursor.execute(customerInfoAdd, val)
 
