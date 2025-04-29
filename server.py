@@ -11,6 +11,7 @@ from datetime import datetime
 from functions import *
 from random_word import RandomWords
 
+# ALL CONST VAR GO HERE
 HEADER = 64
 PORT = 5050
 SERVER = socket.gethostbyname(socket.gethostname())
@@ -40,18 +41,18 @@ mycursor = mydb.cursor()
 
 def singleHash(content):
     singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
-    return singleHash
+    return str(singleHash)
     
 def doubleHash(content):
     singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
     doubleHash = blake3.blake3(f"{singleHash}".encode('utf-8')).hexdigest()
-    return doubleHash
+    return str(doubleHash)
 
 def tripleHash(content):
     singleHash = blake3.blake3(f"{content}".encode('utf-8')).hexdigest()
     doubleHash = blake3.blake3(f"{singleHash}".encode('utf-8')).hexdigest()
     tripleHash = blake3.blake3(f"{doubleHash}".encode('utf-8')).hexdigest()
-    return tripleHash
+    return str(tripleHash)
 
 # Verifys hash using: "single_hash", "double_hash", "triple_hash"
 def verifyHash():
@@ -112,10 +113,12 @@ def delete_user(user_name, password):
 
     mycursor.excute(sqlWherePassword)
     UserWherePassword = mycursor.fetchall()
-    
-    
-    
-    
+
+# Func to turn array into string
+def array_to_string(arry):
+    return ','.join([str(element) for element in arry])
+
+# Will shutdown server if "SHUTDOWN MESSAGE" is typed in terminal
 def shutdown_server():
     global server_running
     while True:
@@ -126,6 +129,7 @@ def shutdown_server():
             print("[SHUTDOWN] Server is shutting down...")
             break
 
+# Func to handle a single client. When dealing with more then one client the "threading" module will be used
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     connected = True
@@ -198,7 +202,7 @@ customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id
 
 # Function for adding customer info to database. NOTES: in DB username is not hashed and password is double hashed
 def Add_User(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
-    val = (f"{username}", f"{doubleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}")
+    val = (f"{username}", f"{doubleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}", f"{array_to_string(hashWordSecurity(wordSecurityList))}")
     mycursor.execute(customerInfoAdd, val)
 
     # Won't excute without "mydb.commit()"
@@ -211,6 +215,7 @@ def hasDuplicates(arr):
 
 # Generates 25 random words for added login security. NOTE: this function should be excuted before using "AddCustomerInfo" func because wordlist should be in DB
 def wordSecurity():
+    global wordSecurityList, testWordList
     wordSecurityList = []
     testWordList = []
     wordListCount = 0
@@ -239,5 +244,5 @@ def hashWordSecurity(arr):
                 
 # Actually run all the code here
 verifyHash()
-threading.Thread(target=start).start()
+threading.Thread(target=start).start() # I'm not sure if this needs to be threaded.
 threading.Thread(target=shutdown_server).start()
