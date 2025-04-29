@@ -24,7 +24,7 @@ DECODE_KEY = '{+E%%)]XKSZ-w$SMS-'
 ID_CODE = "8e9acf8a6dd4ad6a5eed38bdd217a6e93d6b273ce74e886972c12dc58ceaea00"
 
 # Hash test constants
-verifyhash = 'test'
+VERIFY_HASH = 'test'
 single_test = "4878ca0425c739fa427f7eda20fe845f6b2e46ba5fe2a14df5b1e32f50603215"
 double_test = "55beb65d3293549b07cf215978375cf674d82de8657775da6c0f697b4e6b5e0b"
 triple_test = "1af8e96926a936cce32a1e304a068a3379968fd28c0843dcb08186adfaba1441"
