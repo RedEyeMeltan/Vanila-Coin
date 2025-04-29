@@ -207,7 +207,7 @@ def Add_User(username, password, cpu_id, ram_id, motherboard_id, time_acount_cre
 
     # Won't excute without "mydb.commit()"
     mydb.commit()
-    print(f"Added user: {username} to database. ID: ")
+    print(f"Added user: {username} to database. ID: ") # Reminder: add ID as an f bracket
 
 # Checks if a list contains any duplicate elements.
 def hasDuplicates(arr):
