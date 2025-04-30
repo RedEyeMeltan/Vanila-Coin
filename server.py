@@ -25,9 +25,9 @@ ID_CODE = "8e9acf8a6dd4ad6a5eed38bdd217a6e93d6b273ce74e886972c12dc58ceaea00"
 
 # Hash test constants
 VERIFY_HASH = 'test'
-single_test = "4878ca0425c739fa427f7eda20fe845f6b2e46ba5fe2a14df5b1e32f50603215"
-double_test = "55beb65d3293549b07cf215978375cf674d82de8657775da6c0f697b4e6b5e0b"
-triple_test = "1af8e96926a936cce32a1e304a068a3379968fd28c0843dcb08186adfaba1441"
+SINGLE_TEST = "4878ca0425c739fa427f7eda20fe845f6b2e46ba5fe2a14df5b1e32f50603215"
+DOUBLE_TEST = "55beb65d3293549b07cf215978375cf674d82de8657775da6c0f697b4e6b5e0b"
+TRIPLE_TEST = "1af8e96926a936cce32a1e304a068a3379968fd28c0843dcb08186adfaba1441"
 
 # Server setup
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -56,21 +56,21 @@ def tripleHash(content):
 
 # Verifys hash using: "single_hash", "double_hash", "triple_hash"
 def verifyHash():
-    singleHash(verifyhash)
-    doubleHash(verifyhash)
-    tripleHash(verifyhash)
+    singleHash(VERIFY_HASH)
+    doubleHash(VERIFY_HASH)
+    tripleHash(VERIFY_HASH)
     
-    if single_hex_dig == single_test:
+    if singleHash() == SINGLE_TEST:
         print("{HASH TEST} Single hash working.\n")
     else:
         print("{ERROR!!!} SINGLE HASH TEST FAILED.\n")
     
-    if double_hex_dig == double_test:
+    if doubleHash() == DOUBLE_TEST:
         print("{HASH TEST} Double hash working.\n")
     else:
         print("{ERROR!!!} DOUBLE HASH TEST FAILED.\n")
     
-    if triple_hex_dig == triple_test:
+    if tripleHash() == TRIPLE_TEST:
         print("{HASH TEST} Triple hash working.\n")
     else:
         print("{ERROR!!!} TRIPLE HASH TEST FAILED.\n")
@@ -103,16 +103,20 @@ def view_all_user_data():
         print() # Newline for readability
 
 def delete_user(user_name, password):
-    global 
-    
-    sqlWhereUserName = f"SELECT * FROM customers WHERE user_name ='{user_name}'"
-    sqlWherePassword = f"SELECT * FROM customers WHERE password ='{doubleHash(password)}'"
+    sqlWhereUserName = f"SELECT * FROM username WHERE user_name = %s"
+    mycursor.execute(sqlWhereUserName, user_name)
+    UserNameWhere = mycursor.fetchall()
 
-    mycursor.execute(sqlWhereUserName)
-    UserNameResult = mycursor.fetchall() 
-
-    mycursor.excute(sqlWherePassword)
+    sqlWherePassword = f"SELECT * FROM password WHERE password = %s"
+    pswrd = doubleHash(password)
+    mycursor.execute(sqlWherePassword, pswrd)
     UserWherePassword = mycursor.fetchall()
+
+    if UserNameResult == UserWherePassword:
+        sqlDeleteUser = "DELETE WHERE username = %s"
+        mycursor.execute(sqlDeleteUser, user_name)
+        mydb.commit()
+        print(mycursor.rowcount, "user deleted")
 
 # Func to turn array into string
 def array_to_string(arry):
@@ -165,6 +169,7 @@ def handle_client(conn, addr):
                 conn.send(f"MSG received. MSG: {msg}".encode(FORMAT))
     conn.close()
 
+# Start up the server and the neccesary functions with this func
 def start():
     print("[STARTING] server is starting...")
     server.listen()
@@ -195,19 +200,22 @@ mydb = mysql.connector.connect(
 )
 
 # Create table
-mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256), word_list VARCHAR(2512))")
+mycursor.execute("CREATE TABLE customer_info (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(256), password VARCHAR(256), cpu_id VARCHAR(256), ram_id VARCHAR(256), motherboard_id VARCHAR(256), time_acount_created VARCHAR(256), word_list VARCHAR(1024))")
 
 # Template for adding info to table
 customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created, word_list) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
 # Function for adding customer info to database. NOTES: in DB username is not hashed and password is double hashed
 def Add_User(username, password, cpu_id, ram_id, motherboard_id, time_acount_created):
+    # Template for adding info to table
+    customerInfoAdd = "INSERT INTO customer_info (username, password, cpu_id, ram_id, motherboard_id, time_acount_created, word_list) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+
     val = (f"{username}", f"{doubleHash(password)}", f"{singleHash(cpu_id)}", f"{singleHash(ram_id)}", f"{singleHash(motherboard_id)}", f"{getTime()}", f"{array_to_string(hashWordSecurity(wordSecurityList))}")
     mycursor.execute(customerInfoAdd, val)
 
     # Won't excute without "mydb.commit()"
     mydb.commit()
-    print(f"Added user: {username} to database. ID: ") # Reminder: add ID as an f bracket
+    print(f"Added user: {username} to database") # Reminder: add ID as an f bracket
 
 # Checks if a list contains any duplicate elements.
 def hasDuplicates(arr):
@@ -241,8 +249,10 @@ def hashWordSecurity(arr):
     arr[i] = singleHash(arr[i])
   return arr
 
+def checkWordList(user_arry):
+    
                 
 # Actually run all the code here
 verifyHash()
-threading.Thread(target=start).start() # I'm not sure if this needs to be threaded.
+threading.Thread(target=start).start()
 threading.Thread(target=shutdown_server).start()
