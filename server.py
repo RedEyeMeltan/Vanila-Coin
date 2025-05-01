@@ -103,11 +103,11 @@ def view_all_user_data():
         print() # Newline for readability
 
 def delete_user(user_name, password):
-    sqlWhereUserName = f"SELECT * FROM username WHERE user_name = %s"
+    sqlWhereUserName = f"SELECT * FROM customer_info WHERE user_name = %s"
     mycursor.execute(sqlWhereUserName, user_name)
     UserNameWhere = mycursor.fetchall()
 
-    sqlWherePassword = f"SELECT * FROM password WHERE password = %s"
+    sqlWherePassword = f"SELECT * FROM customer_info WHERE password = %s"
     pswrd = doubleHash(password)
     mycursor.execute(sqlWherePassword, pswrd)
     UserWherePassword = mycursor.fetchall()
@@ -117,6 +117,16 @@ def delete_user(user_name, password):
         mycursor.execute(sqlDeleteUser, user_name)
         mydb.commit()
         print(mycursor.rowcount, "user deleted")
+
+# Func to reset password
+def reset_pswrd(old_pswrd, new_pswrd):
+    sqlResetPassword = "UPDATE customer_info SET password = %s WHERE address = %s"
+    valResetPassword = (doubleHash(new_pswrd), doubleHash(old_pswrd))
+
+    mycursor.execute(sqlResetPassword, valResetPassword)
+    mydb.commit()
+
+    print(mycursor.rowcount, "password(s) affected/changed")
 
 # Func to turn array into string
 def array_to_string(arry):
@@ -215,19 +225,19 @@ def Add_User(username, password, cpu_id, ram_id, motherboard_id, time_acount_cre
 
     # Won't excute without "mydb.commit()"
     mydb.commit()
-    print(f"Added user: {username} to database") # Reminder: add ID as an f bracket
+    print(f"Added user: {username} to database. ID: {mycursor.lastrowid}") # Reminder: add ID as an f bracket
 
 # Checks if a list contains any duplicate elements.
 def hasDuplicates(arr):
     return len(arr) != len(set(arr))
 
-# Generates 25 random words for added login security. NOTE: this function should be excuted before using "AddCustomerInfo" func because wordlist should be in DB
+# Generates 20 random words for added login security. NOTE: this function should be excuted before using "AddCustomerInfo" func because wordlist should be in DB
 def wordSecurity():
     global wordSecurityList, testWordList
     wordSecurityList = []
     testWordList = []
     wordListCount = 0
-    while wordListCount <= 20:
+    while wordListCount < 21:
         testWord = r.get_random_word()
         if len(testWord) <= 6:
           testWordList.append(testWord)
@@ -249,7 +259,26 @@ def hashWordSecurity(arr):
     arr[i] = singleHash(arr[i])
   return arr
 
-def checkWordList(user_arry):
+def checkWordList(userName, pswrd):
+    checkWordList = []
+    forLoopLength = 20
+    
+    for i in range(forLoopLength):
+        user_input = input(f"Enter word {i+1}: ")
+        checkWordList.append(user_input)
+
+    sqlWhereUserName = f"SELECT * FROM customer_info WHERE user_name = %s"
+    mycursor.execute(sqlWhereUserName, userName)
+    UserNameWhere = mycursor.fetchall()
+
+    sqlWherePassword = f"SELECT * FROM customer_info WHERE password = %s"
+    pswrd = doubleHash(pswrd)
+    mycursor.execute(sqlWherePassword, pswrd)
+    UserWherePassword = mycursor.fetchall()
+
+    if UserNameResult == UserWherePassword:
+        pswrd
+
     
                 
 # Actually run all the code here
