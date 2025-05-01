@@ -260,6 +260,7 @@ def hashWordSecurity(arr):
   return arr
 
 def checkWordList(userName, pswrd):
+    global wordListMatch
     checkWordList = []
     forLoopLength = 20
     
@@ -267,19 +268,29 @@ def checkWordList(userName, pswrd):
         user_input = input(f"Enter word {i+1}: ")
         checkWordList.append(user_input)
 
+    checkWordList = hashWordSecurity(checkWordList)
+    
     sqlWhereUserName = f"SELECT * FROM customer_info WHERE user_name = %s"
     mycursor.execute(sqlWhereUserName, userName)
-    UserNameWhere = mycursor.fetchall()
+    UserNameResult = mycursor.fetchall()
 
     sqlWherePassword = f"SELECT * FROM customer_info WHERE password = %s"
     pswrd = doubleHash(pswrd)
     mycursor.execute(sqlWherePassword, pswrd)
-    UserWherePassword = mycursor.fetchall()
+    PasswordResult = mycursor.fetchall()
 
-    if UserNameResult == UserWherePassword:
-        pswrd
+    sqlWhereWordlist = f"SELECT * FROM customer_info WHERE word_list = %s"
+    mycursor.execute(sqlWhereWordlist, checkWordList)
+    WordlistResult = mycursor.fetchall()
 
-    
+    if UserNameResult == PasswordResult:
+        infoMatch = True
+
+    if infoMatch == True:
+        if WordlistResult == checkWordList:
+            WordlistMatch = True
+            return True
+        
                 
 # Actually run all the code here
 verifyHash()
