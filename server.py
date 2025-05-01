@@ -5,6 +5,7 @@ import pytz
 import json
 import mysql.connector
 import blake3
+import smtplib
 import pandas as pd
 from mysql.connector import Error
 from datetime import datetime
@@ -290,9 +291,12 @@ def checkWordList(userName, pswrd):
         if WordlistResult == checkWordList:
             WordlistMatch = True
             return True
+
+def emailAuth(message, receiver, ):
+    
         
                 
 # Actually run all the code here
-verifyHash()
+verifyHash()x
 threading.Thread(target=start).start()
 threading.Thread(target=shutdown_server).start()
