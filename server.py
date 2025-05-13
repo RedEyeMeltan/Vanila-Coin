@@ -292,8 +292,13 @@ def checkWordList(userName, pswrd):
             WordlistMatch = True
             return True
 
-def emailAuth(message, receiver, ):
-    
+def encode_ascii_text(text):
+    # Convert each character to 3-digit ASCII
+    return ''.join(f"{ord(char):03d}" for char in text)
+
+def decode_ascii_text(ascii_string):
+    # Split string into groups of 3 digits and convert back to characters
+    return ''.join(chr(int(ascii_string[i:i+3])) for i in range(0, len(ascii_string), 3))
         
                 
 # Actually run all the code here
