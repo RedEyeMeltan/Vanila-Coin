@@ -2,6 +2,7 @@ import socket
 import wmi
 import hashlib
 import blake3
+import os
 
 w = wmi.WMI() # Initialize WMI object
 
@@ -81,9 +82,9 @@ def send(msg):
     response = client.recv(2048).decode(FORMAT)  # Decode response
     print(f"{response}")
 
-
-
-
-hwidSend()
-print("Sending disconnect message...")
-send(DISCONNECT_MESSAGE)
+if os.name == "windows":
+    hwidSend()
+    print("Sending disconnect message...")
+    send(DISCONNECT_MESSAGE)
+else:
+    print("WRONG OS DETECTED ... WINDOWS IS REQUIRED ... IF YOU THINK THIS IS AN ERROR PLEASE TRY AGAIN LATER OR CONTACT SUPPORT")
