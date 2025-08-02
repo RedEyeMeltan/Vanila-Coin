@@ -121,7 +121,7 @@ fn tcp_send(data: &str) -> io::Result<()>{
     let mut stream = TcpStream::connect("127.0.0.1:34254")?;
 
     // Write some data
-    let bytes_written = stream.write(b"{data}")?; //not sure this line works TEST LATER
+    let bytes_written = stream.write(data.as_bytes())?; //not sure this line works TEST LATER (changed recently)
     println!("{} bytes written", bytes_written);
 
     // Flush the stream
