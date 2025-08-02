@@ -206,8 +206,8 @@ mycursor.execute("CREATE DATABASE mydatabase")
 mydb = mysql.connector.connect(
   host="localhost",
   user="yourusername",
-  password="yourpassword"
-  database-"mydatabase"
+  password="yourpassword",
+  database="mydatabase"
 )
 
 # Create table
