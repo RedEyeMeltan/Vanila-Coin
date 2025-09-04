@@ -1,2 +1,2 @@
-Server Crypto
+Vanila Coin
   By: Danila U
