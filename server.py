@@ -28,9 +28,9 @@ ID_CODE = "8e9acf8a6dd4ad6a5eed38bdd217a6e93d6b273ce74e886972c12dc58ceaea00"
 # Database configuration - UPDATE THESE WITH YOUR ACTUAL CREDENTIALS
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'rootuser',  # Change this to your MySQL username
-    'password': 'Scarystop44$',  # Change this to your MySQL password (empty for XAMPP default)
-    'database': 'vanillacoin'
+    'user': '(user)',  # Change this to your MySQL username
+    'password': '(Password)',  # Change this to your MySQL password (empty for XAMPP default)
+    'database': '(Database)'
 }
 
 # Blockchain constants
@@ -810,4 +810,5 @@ def main():
     print("👋 Goodbye!")
 
 if __name__ == "__main__":
+
     main()
